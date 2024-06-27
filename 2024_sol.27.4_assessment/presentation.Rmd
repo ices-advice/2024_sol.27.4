@@ -1,0 +1,405 @@
+---
+title: "Stock assessment North sea sole (sol.27.4)"
+author: Iago MOSQUEIRA (WMR) <iago.mosqueira@wur.nl>
+institute: "ICES WGNSSK 16-25 April 2024"
+header-includes: 
+  - \newcommand{\fig}[2][0.70]{\centering\includegraphics[width=#1\textwidth]{report/#2}}
+fontsize: 10pt
+output:
+  wmrkdown::wur:
+    slide_level: 2
+  binb::metropolis:
+    latex_engine: pdflatex
+tags:
+---
+
+## North sea sole
+
+:::: {.columns}
+
+::: {.column width="40%"}
+- Data
+  - Commercial landings and discards
+  - Weights-at-age in catch
+  - Survey indices
+
+- Assumptions
+  - Natural mortality
+  - Maturity
+
+- Assessment
+  - Stock Synthesis (SS3)
+  - TAF
+:::
+
+::: {.column width="60%"}
+\fig[0.75]{images/north_sea_map.jpg}
+:::
+
+::::
+
+## Official catches
+
+\fig[0.65]{official_landings.png}
+
+### Latest advice
+
+- 2022: 15,330 t, 38% uptake
+- 2023: 9,152 t, 48% uptake 
+- 2024: 3,675 t
+
+## Intercatch - Benchmark
+
+- Re-estimated 2002-2022 landings and discards.
+- Discards raised at gear level if P(L w/D data) > 50% L.
+- Similar method for age allocations.
+- If < 50% then pooled into single group.
+- Discards sampling (observed and self-sampling) not ideal for sole.
+- Unreported catches and discard survival preliminary information not used.
+
+### Intercatch - Discards raising
+
+|Category    | Imported| Raised|Percent imported |
+|:-----------|--------:|------:|:----------------|
+|Discards    |  316.066|  44.53|87.6%            |
+|Landings    | 4014.987|   0.00|100.0%           |
+|BMS landing |    0.394|   0.00|100.0%           |
+
+## Landings and discards
+
+\fig[0.75]{data_catch.png}
+
+## Catch at age
+
+\fig[0.75]{data_catchn.png}
+
+## Catch at age
+
+\fig[0.45]{data_catchnts.png}
+\fig[0.45]{data_catchn_corr.png}
+
+- Good tracking of strong cohorts, but age 1.
+
+## Weights at age - landings & discards
+
+\fig[0.45]{data_landingswt.png}
+\fig[0.45]{data_discardswt.png}
+
+## Weights at age - catch & stock
+
+\fig[0.45]{data_catchwt.png}
+\fig[0.45]{data_stockwt.png}
+
+- Trends over time settling at lower values.
+- Large variability due to sampling, maybe best to model.
+
+## Surveys
+
+- BTS Q3 (NL, DE, BE, GB), 1985-2023, ages 0-10+
+- SNS (NL), 1970-2023 (-2003), ages 0-10+
+- DYFS (NL, DE, BE), 1970-2023, ages 0-1
+- DATRAS data 1990-2022 taken from benchmark, updated to 2023.
+
+## Hauls by survey
+
+\fig[0.48]{survey/data_hauls_survey.png}
+\fig[0.48]{survey/map_hauls_survey.png}
+
+<!-- 
+- SNS limited, COAST now covers most spawning area.
+--> 
+
+## Surveys in 2023
+
+\fig[0.48]{survey/map_hauls_survey_2023.png}
+\fig[0.48]{survey/map_hauls_survey_2023_sole.png}
+
+## Hauls and age samples in  2021-2023
+
+\fig[0.40]{survey/map_recent_surveys.png}
+\fig[0.48]{survey/data_aged_survey.png}
+
+## Indices
+
+- Delta GAM standardization (Berg and Kristensen, 2012).
+  - `surveyIndices` package.
+- Year + Gear + Ship
+- Time-invariant: lat, lon
+- Time-variant: lat, lon, Year
+- Depth, SweptArea
+- Lognormal distribution
+- Biomass & at-age models (SS3)
+
+## Indices estimation grid
+
+- Moved to fixed estimation grid for each survey.
+- COAST grid set as polygon that includes all samples.
+
+\fig[0.40]{survey/grid_northsea.png}
+\fig[0.40]{survey/grid_coast.png}
+
+## Indices - residuals 2023
+
+\fig[0.48]{survey/indices_bts_residuals}
+\fig[0.48]{survey/indices_bts_res2023}
+
+## Biomass indices - retrospective
+
+\fig[0.48]{survey/indices_retro_bts}
+\fig[0.48]{survey/indices_retro_coast}
+
+## Indices at age - 1990-2023
+
+\fig[0.70]{survey/indices}
+
+## Biomass indices - 1990-2023
+
+\fig[0.75]{survey/bioindices}
+
+## Indices - BTS cohort correlation
+
+\fig[0.32]{survey/indices_bts_cohcorr}
+
+- 1990-2006 & 2006-2023
+
+\fig[0.64]{survey/indices_bts_cohcorr_decades}
+
+## Indices - BTS cohort tracking
+
+\fig[0.75]{survey/bts_cohort.png}
+
+## Indices - COAST cohort correlation
+
+\fig[0.32]{survey/indices_coast_cohcorr}
+
+- 1992-2002, 2003-2023 & 2013-2023
+
+\fig[0.64]{survey/indices_coast_cohcorr_decades}
+
+## Indices - COAST cohort tracking
+
+\fig[0.75]{survey/coast_cohort.png}
+
+## SS3 model setup
+
+- Age-based, sex aggregated, ages 0-10+
+- Beverton and Holt SRR, h=0.665 (FishLife)
+- Two fleets, landings & discards.
+  - Discards estimated from 2001, different weight-at-age
+- Two indices, BTS and COAST (SNS + DYFS), 1990-2023.
+- Selectivities modelled as random walks, constant from age 5.
+- Fbar computed across ages 2-6
+
+\fig[0.45]{ss3/data_plot2.png}
+
+## Biology - Natural mortality
+
+- Lorenzen (2022) M-at-age, $M_a = W_a ^ -0.288 \cdot 3$.
+- Then (2014) average M, $\bar{M} = 4.899 \cdot {T_{max}}^{-0.916}$.
+- $W_a$ as average of stock.wt.
+- $T_{max} = 26$.
+- mean(M) ages 0-10+ = 0.44
+- mean(M) ages 2-6 = 0.35
+
+\fig[0.65]{ss3/bio21_natmort.png}
+
+## Ageing error
+
+- Error matrix from exchange exercise in 2016.
+- New exchange in 2024
+
+\tiny
+
+| Modal age | 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10 |
+|-----------|---|---|---|---|---|---|---|---|---|---|---|
+| 0         | 0.972 | 0.028 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
+| 1         | 0.006 | 0.988 | 0.006 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
+| 2         | 0 | 0.007 | 0.986 | 0.007 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
+| 3         | 0 | 0 | 0.021 | 0.941 | 0.038 | 0 | 0 | 0 | 0 | 0 | 0 |
+| 4         | 0 | 0 | 0 | 0.201 | 0.774 | 0.025 | 0 | 0 | 0 | 0 | 0 |
+| 5         | 0 | 0 | 0 | 0.011 | 0.137 | 0.784 | 0.063 | 0.005 | 0 | 0 | 0 |
+| 6         | 0 | 0 | 0 | 0 | 0.011 | 0.114 | 0.795 | 0.080 | 0 | 0 | 0 |
+| 7         | 0 | 0 | 0 | 0 | 0 | 0.003 | 0.188 | 0.760 | 0.035 | 0.014 | 0 |
+| 8         | 0 | 0 | 0 | 0 | 0 | 0 | 0.020 | 0.149 | 0.741 | 0.090 | 0 |
+| 9         | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0.013 | 0.161 | 0.719 | 0.098 |
+| 10        | 0 | 0 | 0 | 0 | 0 | 0.007 | 0.010 | 0.013 | 0.066 | 0.185 | 0.629 |
+
+## SS3 diagnostics
+
+- Stock Synthesis 3.30.22.1
+- Hessian inverted, convergence level: 0.00506763
+- Total likelihood: 3261.23
+- ADMB McMC run with 100,000 samples, thinning by 100.
+- Jitter runs (50), all converged, solution appears stable.
+
+```r
+3261.23 3261.46 3265.88 3270.36 5129.73 6833.29
+     43       3       1       1       1       1
+```
+
+## Retrospective runs
+
+- Mohn's rho: $\rho_{SSB}=0.06$, $\rho_{F}=0.04$
+- Benchmark: $\rho_{SSB}=0.05$, $\rho_{F}=0.02$
+
+\fig[0.85]{retro.png}
+
+## Model prediction skill
+
+\fig[0.45]{hcxval_2.png}
+\fig[0.45]{hcxval_3.png}
+
+## Fits to surveys biomass
+
+\fig[0.60]{ss3/index2_cpuefit_BTS.png}
+\fig[0.60]{ss3/index2_cpuefit_COAST.png}
+
+## Fits to surveys biomass
+
+\fig[0.60]{ss3/index3_obs_vs_exp_BTS.png}
+\fig[0.60]{ss3/index3_obs_vs_exp_COAST.png}
+
+## Comparison with benchmark run
+
+- Benchmark run, surveys 1990-2022
+
+\fig[0.45]{benchmark/index2_cpuefit_BTS.png}
+\fig[0.45]{benchmark/index2_cpuefit_COAST.png}
+
+- WGNSSK 2024 run, surveys 1990-2023
+
+\fig[0.45]{ss3/index2_cpuefit_BTS.png}
+\fig[0.45]{ss3/index2_cpuefit_COAST.png}
+
+## Fits to age-composition - landings & discards
+
+\fig[0.30]{ss3/comp_agefit_flt1mkt0_page1.png}
+\fig[0.30]{ss3/comp_agefit_flt1mkt0_page2.png}
+\fig[0.30]{ss3/comp_agefit_flt1mkt0_page3.png}
+
+\fig[0.35]{ss3/comp_agedat_flt4mkt0.png}
+
+## Fits to age-composition - BTS
+
+\fig[0.48]{ss3/comp_agefit_flt2mkt0_page1.png}
+\fig[0.48]{ss3/comp_agefit_flt2mkt0_page2.png}
+
+## Fits to age-composition - COAST
+
+\fig[0.48]{ss3/comp_agefit_flt3mkt0_page1.png}
+\fig[0.48]{ss3/comp_agefit_flt3mkt0_page2.png}
+
+## Fit to mean age in survey
+
+\fig[0.65]{ss3/comp_agefit_data_weighting_TA1.8_BTS.png}
+
+## Residuals
+
+\fig[0.65]{ss3/comp_agefit__multi-fleet_comparison.png}
+
+## OSA residuals
+
+\fig[0.45]{osa_bts.png}
+\fig[0.45]{osa_coast.png}
+\fig[0.45]{osa_fleet.png}
+\fig[0.45]{osa_discards.png}
+
+## Residual runs-tests
+
+\fig[0.45]{residruns_BTS.png}
+\fig[0.45]{residruns_COAST.png}
+
+\fig[0.45]{residruns_Discards.png}
+\fig[0.45]{residruns_Fleet.png}
+
+
+## Stock estimates
+
+\fig[0.65]{stock_mcmc.png}
+
++ PLOT w/ uncertainty
++ REC show long-term GM, 10 year GM
+
+## Stock-recruitment
+
+\fig[0.48]{srr.png}
+\fig[0.48]{ss3/SR_curve2.png}
+
+## Recruitment estimates precision
+
+\fig[0.65]{model_reccv.png}
+
+## Proportion SSB at age
+
+\fig[0.65]{model_propssb.png}
+
+## Proportion Biomass at age
+
+\fig[0.65]{model_propbiom.png}
+
+## Total, spawning and vulnerable stock biomass
+
+\fig[0.45]{ssbtsb.png}
+\fig[0.45]{vulbiom.png}
+
+## Selectivities
+
+- Final year selectivity by fleet
+
+\fig[0.45]{ss3/sel02_multiple_fleets_age1.png}
+
+- Changes in landings selectivity
+
+\fig[0.40]{catch_selex.png}
+\fig[0.40]{ss3/sel11_timevary_surf_flt1sex1.png}
+
+## F-at-age
+
+\fig[0.75]{model_fatage.png}
+
+## Comparison WGNSSK 2024 - WKBFLAT benchmark
+
+\fig[0.85]{wgvsbench.png}
+
+## Comparison AAP 2023 - SS3 2024
+
+\fig[0.85]{ss3vsaap.png}
+
+## Reference points
+
+\small
+
+| $B_{trigger}$ | $F_{MSY}$  | $B_{lim}$  | $B_{PA}$ | $F_{lim}$ | $F_{PA}$   | lower $F_{MSY}$ | upper $F_{MSY}$ |
+|----------|-------|-------|-------|------|-------|-------|-------|
+| 52532    | 0.157 | 37804 | 52532 | 0.26 | 0.157 | 0.144 | 0.157 |
+
+## Stock status
+
+\fig[0.48]{refpts_fbaref.png}
+\fig[0.48]{refpts_ssbref.png}
+
+## Issues list
+
+- BOG says
+  - 'There is relatively poor prediction skill'
+  - 'Discards should be reconstructed further back in time'
+  - 'The maturity assumption should be improved'
+  - 'There was an issue with the calculation of reference points but this has been addressed'
+
+### Issues
+
+- Revisit maturity assumption and recommend further data collection Q1-2.
+- Reconstruct discards, what methods are worth exploring?
+- Larger M in 1963.
+- Consider area-based assessment to handle survey patterns.
+- GAM estimation grid for BTS creates large CVs, too sparse and/or extensive.
+- Consider the possibility and effect on adding time-variant M.
+
+## Biomass indices WKBFLAT (2022) ~ WGNSSK (2023-1)
+
+\fig[0.48]{extra/indices_retro_2002.png}
+
+- L-W relationship fitted on all data BEFORE retro cut.
+- `surveyIndex::retro.surveyIdx` modified to fit L-W model at every peel step.
+
+

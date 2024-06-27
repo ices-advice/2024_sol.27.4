@@ -1,0 +1,578 @@
+---
+title: "sol274"
+output:
+  officedown::rdocx_document:
+    reference_num: true
+    number_sections: false
+    base_format: "bookdown::word_document2"
+tags: [ICES SOL.27.4 WGNSSK 2022]
+---
+
+```{r, knitr, echo=FALSE, message=FALSE, warning=FALSE}
+library(knitr)
+opts_chunk$set(echo=FALSE, message=FALSE, warning=FALSE,
+  fig.width=6, fig.height=5, out.width="90%", fig.pos='!hbt')
+library(officedown)
+library(officer)
+```
+
+```{r pkgs}
+library(FLCore)
+library(icesAdvice)
+source("utilities.R")
+```
+
+```{r data}
+load("data/data.rda", verbose=FALSE)
+load("model/aap.rda", verbose=FALSE)
+load("output/tables.rda", verbose=FALSE)
+load('bootstrap/data/forecast_tables.rda', verbose=FALSE)
+
+ly <- dims(run)$maxyear # last model year
+dy <- ac(ly) # data
+npy <- ly - 1    # previous
+py <- ac(npy)
+iy <- ac(ly + 1) # intermediate
+fy <- ac(ly + 2) # forecast
+sy <- ac(ly + 3) # ssb
+```
+
+# Sole (Solea solea) in Subarea 27.4 (North Sea)
+
+## General
+
+The assessment of sole in Subarea 27.4 is an update of last year's model run. This is the result of applying the methodology agreed at the last benchmark, carried out in February 2024 (WKBFLATFISH; ICES 2024). The adopted assessment model is the SS3 model of Methot and Wetzel (2013). The model uses two indices of abundance: a combined index using data from the Sole Net Survey (SNS) and the Demersal Young Fish Survey (DYFS) and the Demersal Young Fish Survey (DYFS), covering the coastal areas of the Southern North Sea, and a combined index based on the BTS Q3 survey, including data from The Netherlands, Belgium, Germany and United Kingdom. This index covers the full area of distribution of the stock. Further details about the implementation of the BTS survey and changes to the stock assessment model can be found in the benchmark report (WKBFLATFISH; ICES 2024).
+
+The benchmark agreed on the settings to be applied to the SS3 model for the assessment of sol.27.4 and for the forecasts providing annual advice on catch limits. North Sea sole has been defined as a category 1 stock according to ICES guidelines, and the advice presented in this section refers to catch limits for `r fy`.
+
+### Stock structure and definition
+
+North Sea sole is assumed to consist of a single stock unit.
+
+### Ecosystem aspects
+
+North Sea sole is commonly distributed along the Southern half of the North Sea. Spawning takes place in shallow waters on the Southern coasts of the North Sea. Episodic large recruitment events take place at irregular intervals.
+
+### Fisheries
+
+Many vessels in the beam trawl fleet, targeting sole in the North Sea, transitioned in the past decade to using electrical pulse gears. In 2011, approximately 30 derogation licenses for pulse trawls were taken into operation, a number than then increased to 42 in 2012.
+
+The catch composition of these gears has been found to be different from the traditional beam trawl (ICES, 2018). The impact of this gear transition on the North Sea ecosystem has been evaluated by ICES (ICES, 2018). ICES recommended that further studies aimed at investigating catch composition of these innovative gears in comparison to traditional beam trawls were undertaken.
+
+Between 2014 and 2017 the use of pulse trawls in the main fishery operating in the North Sea increased and less vessels were operating with traditional beam trawls. The pulse gear allows fishing of softer grounds and as a result the spatial distribution of the main fisheries has changed to the southern part of Division 4.c. As a consequence a larger proportion of the sole catch is now taken in this area (ICES, 2018).
+
+In 2019 the European Parliament decided to ban pulse fisheries in European waters. This ban on pulse fishing implied that ultimately only 5% of the fleet of each member state could continue its fishing activities with the pulse trawl until 1 July 2021, after which a total ban has been applied. The precise response to the fleet to the ban appears to be more varied than simply a return to the gear configurations in use before the advent of pulse. The choice of gear has also been affected by the increase in fuel prices. Overall selectivity has thus been in a dynamic state over the last decade.
+
+BMS landings of sole reported to ICES are currently much lower than the estimates of catch below the minimum conservation reference size (MCRS), 4.4% of the total catch from observer programs.
+
+### Management regulations
+
+Management of sole in 7.d is by TAC and technical measures.
+
+The minimum landing size for sole is 24 cm. Sole in the North Sea is under the landing obligation since 2016 (EU, 2013/1380). Survivability and *de minimis* exemptions apply to this stock (EU, 2019/2238). The first one applies to common sole below MCRS caught with bottom trawls with a cod end mesh size of 80-99 mm in ICES division 4c. The second is of use to common sole caught with gillnets and trammel nets in in Union waters of ICES divisions 2a and 3a, and ICES subarea 4.
+
+EU regulation has progressively banned the use of electric pulse fisheries in European waters. The total ban took effect in July 2018. Pulse fishing had been adopted by a total of 84 Dutch vessels, which have since returned to beam trawling or switched to other gears.
+
+#### Management plans
+
+Since 2015, advice has been given according to the ICES MSY approach.
+
+## Fisheries data
+
+### Official catches
+
+For `r dy`, the official landings are presented next to the landings and discards data submitted to InterCatch in Figure \@ref(fig:official). A time-series of the official landings by country and overall total, the officially reported BMS landings, the landings reported to ICES and the agreed TAC are presented in Table \@ref(tab:tac).
+
+### InterCatch processing
+
+Data submitted on landings and discards at age by métier and quarter has been extracted from InterCatch. Figures \@ref(fig:iclawt), \@ref(fig:iclape) and \@ref(fig:icdiwt) show the coverage of the landings, as tonnage and as a cumulative percentage, and discards information, respectively, as available in InterCatch. The allocation of discards and age samples to unsampled strata has followed, in overall terms, the following grouping strategy:
+
+- *TBB_DEF* and *OTB_DEF* < 100, separately and by quarter if possible.
+- *TBB_DEF* and *OTB_DEF* > 100, separately and by quarter if possible.
+- *TBB_CRU* and *OTB_CRU* < 100.
+- *TBB_CRU* and *OTB_CRU* > 100.
+- *GTR_DEF* and *GNS_DEF*.
+- *FPO*, *LLS*, and *MIS*.
+
+
+### ICES estimates of landings and discards
+
+```{r}
+x <- tables$catches[Year %in% c(py, dy), ICES]
+dat <- round((x[2] - x[1]) / x[2] * 100, 0)
+```
+
+Figure \@ref(fig:catches) presents the time series of total catches, landings and discards over the 2002-`r dy` period. Landings, in numbers by age, as used as input for the assessment, are presented in Table \@ref(tab:tlandingsn) and Figure \@ref(fig:landingsn).  Total catches reported to ICES for sole in Subarea 27.4 in `r dy` amounted to `r round(tables$catches[Year == dy, ICES], 0)` tonnes, a change of around `r dat`% compared to the values reported for `r py`.
+
+Since 2016, small mesh beam trawlers (BT2) with discard rates of around 10%, are required to report BMS landings in Subarea 27.4. The official reported BMS landings in `r dy` were `r round(subset(tables$catches, Year == dy)$BMS, 0)` tonnes. For incorporation in the assessment, BMS landings are merged with the estimated discards.
+
+Discards, in numbers at age, as used as input for the assessment, are presented in Table \@ref(tab:tdiscardsn) and Figure \@ref(fig:discardsn). The proportions of caught fish at age that are discarded Figure over the 2002-`r dy` period, over which data on discards is available, is presented in Figure \@ref(fig:discardsp).
+
+```{r}
+dat <- subset(tables$catches, Year==dy)
+```
+
+In `r dy`, official catches amounted to `r round((dat$Official/dat$TAC) * 100, 1)`% of the TAC, while landings reported to ICES were `r round(c(landings(run)[,dy])/dat$TAC * 100, 1)`% of the TAC. If both landings and discards estimates are used, total catch in `r dy` was `r round((c(catch(run)[,dy])/dat$TAC) * 100, 1)`% of the agreed TAC.
+
+## Weights-at-age
+
+Commercial catch weights at age were computed for the first and second quarters to reflect the beginning and mid-year stages, serving as inputs for the SS3 model. To derive these catch weights at age for each quarter, data from sampled strata (which included landings, discards, and IBC) were utilized to allocate numbers and weights across unsampled strata. The final average weights at age were adjusted based on the proportion of numbers a age per stratum. Weights-at-age in the landings, discard weights at age and mean weights-at-age in the stock of sole in Subarea 27.4 can be found in Table \@ref(tab:tlandingswt), (Table \@ref(tab:tdiscardswt)), (Table \@ref(tab:tstockwt))  and Figure \@ref(fig:landingswt), (Figure \@ref(fig:stockwt)). 
+
+## Maturity and natural mortality
+
+A knife-edged maturity-ogive with full maturation at age 3 is assumed for sole in Subarea 27.4 (Table \@ref(tab:tmatm)). WKBFLATFISH 2024 investigated commercial samples (females, quarter 1) revealing low immaturity: Dutch data (2005-2022) showed 54% maturity at age 2 and Belgian data from select years indicated 12% maturity at age 1 and 49% at age 2. Due to these low immaturity rates, the findings were not suitable for revising the maturity ogive. (No new data was presented at the working group in `r iy`). Natural mortality was estimated using Lorenzen's (2022) model, resulting in a vector of relative natural mortality at age. This vector was derived using weights from a von Bertalanffy growth model and a length-weight relationship with parameters averaged from multiple North Sea studies. It was then adjusted by a mean M, scaled based on the stock's maximum age as recommended by Then et al. (2014). No variation over time in natural mortality was assumed.
+
+## Survey data{#cesdata}
+
+Three survey series are used in the assessment of North Sea sole:
+
+- Quarter 3 Beam Trawl Survey (BTS), covering the 1985-`r dy` period and containing samples for ages 0 to 10+.
+- Quarter 3 Sole Net Survey (SNS), extending from 1970 to `r dy` period and containing samples for ages 0 to 10+
+- Quarter 3 and 4 Demersal Young Fish Survey (DYFS), covering the period 1970-2023 containing samples for ages 0 and 1. 
+
+An index of abundance is assembled based on the BTS Q3 samples collected by The Netherlands, Belgium, Germany and United Kingdom (Figure \@ref(fig:maphauls)), available in the DATRAS database. A second index is assembled based on the combination of the SNS series with DFYS series. The combination index contains samples from The Netherlands, Germany and Belgium extracted from DATRAS database. The indices covered the period from 1990 to 2023 and were calculated using a delta GAM model (Berg and Kristensen, 2012) with both time variant and time invariant components. Please refer to the report WKBFLATFISH (ICES, 2024) for further details on the analysis.
+
+A standardized comparison of the two indices over the available time-series is presented on Figure \@ref(fig:btssns), while Figures \@ref(fig:bts) and \@ref(fig:sns) present each individual index in their actual scales. The internal consistency plots of the year class cohorts of the two indices are presented in Figures \@ref(fig:corrbts) and \@ref(fig:corrsns). Changes over the last three decades on the internal consistency of the SNS survey are shown in Figure \@ref(fig:corrsnstime). The mean standardized indices per cohort and by year are shown on Figures \@ref(fig:btscohort) and \@ref(fig:snscohort). The actual values of the two survey indices used in the assessment are presented in Tables \@ref(tab:tbts) and \@ref(tab:tsns).
+
+
+## Assessment
+
+The North Sea sole stock is now assessed using the Stock Synthesis method (SS3; Methot and Wetzel 2013), a shift from the previously used AAP model. This advanced framework is age-based, covering combined sexes, a single area, and two fleets (landings and discards), with two indices of abundance. Selectivity is modeled via a random walk, time-varying for the landings fleet and time-invariant for the discards fleet and surveys, assumed constant from age 5 onwards. Spawning stock biomass is calculated at the start of the year, with fecundity proportional to individual weight. Recruitment begins at the start of the year at age 0, following a Beverton-Holt relationship with a fixed steepness of 0.6646, based on S. solea data from the FishLife dataset (Thorson 2019). Ages 2 to 6 are considered fully selected for the computation of the mean fishing mortality metric (F').
+
+A summary of the assessment results (recruitment, F and SSB, including confidence bounds) is presented in Figure \@ref(fig:fit). The estimates of spawning biomass and corresponding recruitment at age 1 are shown in Figure \@ref(fig:recssb). The proportion of spawning biomass estimated to be accounted for by age and year is presented in Figure \@ref(fig:propssb). The runs test for both indices (Carvalho et al, 2021) are presented in Figure \@ref(fig:runstest) for the overall biomass, and Figure \@ref(fig:runstestages) for the numbers at age. 
+
+The retrospective patterns for recruitment, spawning biomass and fishing mortality are summarized in Figure \@ref(fig:retro). Figure \@ref(fig:xval) presents the results of an analysis of prediction skills by means of hindcasting cross-validation (carried out following Carvalho et al, 2021). A leave-one-out analysis of model fit over the two indices of abundance can be found in Figure \@ref(fig:loo). The estimated standard deviations of the lognormal likelihood for each age and data source are presented in Figure \@ref(fig:sigmas).
+
+Yearly estimates of abundances and fishing mortality-at-age obtained by the model run are presented in Tables \@ref(tab:tstockn) and \@ref(tab:tharvest), respectively.
+
+## Recruitment estimates
+
+The short term forecast for the stock requires an assumption about recruitment in the intermediate year, `r iy`. This has been set to the geometric mean of the 1957-2017 time series of recruitment estimates, `r format((exp(mean(log(window(rec(run), end=ly-5))))), big.mark=",")` million fish. The last five years of recruitment estimates were considered to be more strongly affected by the uncertainty uncovered through the retrospective pattern, so were left out of the calculation of the long-term average, which however changed only by less than one percent.
+
+## Short-term forecasts
+
+The decision tree presented by WKFORBIAS (ICES, 2020b) indicates that advice can be provided for a model with this level of retrospective bias ($\rho > 0.20$ and 3 out of 5 peels outside of the uncertainty bounds), if $F_{HCR} \ll F_{p.05}$, where $F_{p.05} = 0.311$. The values of $F_{HCR}$ returned by the application of the advice rule to the predicted SSB in 2024 would be equal to 0.308, if $F_{2023}$ is assumed to be equal to $F_{2022}$, or 0.378 if catch in 2023 is assumed to be equal to the TAC in 2023 times the average TAC uptake of the last three years, 46%. The decision was thus taken to apply a retrospective correction to the final estimates of abundances at age, $N_{a, 2022}$, following the finding of Brooks & Legault (2016). The initial abundances for the forecast were calculated by applying a correction factor derived from the computed 5-peels $\rho_{SSB}$
+
+$$ \dot{N}^{\rho_{SSB}}_{a, 2022} = \hat{N}^{\rho_{SSB}}_{a, 2022} \frac{1}{a + \rho_{SSB}} $$
+
+This correction, where $\prime{N}_{a} = N_{a} \cdot 0.643$, leads to a change in stock status, as SSB goes from $\hat{SSB_{2022}} = 33962$ to $\dot{SSB_{2022}} = 21832$. Fishing mortalities in 2023 were then recalculated from these new abundances and the observed catches at age. 
+
+Uptake of the advised TAC has been low over the 2020-2022 years, with an average of 46%. Catches in 2023 were assumed to follow this trend, and were set to follow that same proportion of the 2023 advice (9,152 t), so equal to 5,033 t, 82% of the estimated catch in 2022. The activity of the main métier targeting North Sea sole, Dutch BTT 70-99, is being greatly reduced in 2023 due to an increase in operating costs and planned decommissioning of a number of Dutch vessels. Quota uptake in the first quarter of 2023 for the Dutch and Belgium beam-trawl fleets stand at 14.6% and 1.8%, respectively, compared with 14.5% and 3.3% during the same period of 2022.
+
+Short-term forecasts were carried out from the corrected abundances in `r dy`, with the following settings:
+
+- Natural mortality, maturity and weights-at-age in landings, discards and stock for `r iy`-`r fy` set as the average of the last three years (`r npy-3`-`r npy`).
+- Selectivity-at-age for `r iy`-`r fy` set as the average of the last five years (`r npy-5`-`r npy`).
+- Ratio of discards to landings at age as the average over the last three years (`r npy-3`-`r npy`).
+- Recruitment in `r iy` and `r fy` set as `r format((exp(mean(log(window(rec(run), end=2018))))), big.mark=",")` million fish, corresponding to the long term geometric mean.
+- Population numbers in the intermediate year for ages 2 and older are taken from the AAP survivors estimates, corrected for the retrospective bias as explained above. 
+
+Catches in the intermediate year, `r iy`, were set as equal to the established TAC advice in `r iy` multiplied by a three-year average of the TAC uptake (46%).
+
+Forecasts were carried out using the FLR toolset[^3] (Kell *et al.*, 2007), and in particular the FLasher package[^4] (Scott and Mosqueira, 2016). Source code for this analysis is available at the corresponding TAF repository[^5]
+
+[^3]: <https://flr-project.org>
+[^4]: <https://flr-project.org/FLasher>
+[^5]: <https://github.com/ices-taf/2023_sol.27.4_forecast/>
+
+The projections carried out were those necessary to populate the stock catch options table, as summarized here:
+
+- F~advice~: $\bar{F}_{`r fy`} = `r round(c(refpts['Fmsy'] * 0.47), 3)`$
+- F~MSY~: $\bar{F}_{`r fy`} = `r round(c(refpts['Fmsy']), 3)`$
+- F~MSY\ lower~: $\bar{F}_{`r fy`} = `r round(c(refpts['lFmsy']), 3)`$
+- F~MSY\ upper~: $\bar{F}_{`r fy`} = `r round(c(refpts['uFmsy']), 3)`$
+- Zero catch: $\bar{F}_{`r fy`} = 0$
+- F~pa~: $\bar{F}_{`r fy`} = `r round(c(refpts['Fpa']), 3)`$
+- F~lim~: $\bar{F}_{`r fy`} = `r round(c(refpts['Flim']), 3)`$
+- B~pa~: $SSB_{`r fy`} = `r round(c(refpts['Bpa']), 0)`$
+- F~lim~: $SSB_{`r fy`} = `r round(c(refpts['Flim']), 0)`$
+- MSY B~trigger~: $SSB_{`r fy`} = `r round(c(refpts['Btrigger']), 0)`$
+- F~`r iy`~: $\bar{F}_{`r fy`} = `r c(fbar(run)[,'2021'])`$
+- F~mp~: $\bar{F}_{`r fy`} = 0.20$
+- Roll-over TAC: $C_{`r fy`} = 9152 t$
+
+The complete set of advice forecast results can be found in Table \@ref(tab:catchops). The change in advice (-67%) is mainly due to a correction applied to the estimated numbers at age in 2022 (correction factor=0.643) following ICES (2020b). This is done to account for the large retrospective pattern (SSB Mohn's rho = 0.556). Additionally, the target F for advice in 2024 is lower than the target F used in 2023 advice. 
+
+A comparison of the estimated and forecasted abundances at age used as basis for advice in 2022 and 2023 is presented in Figure \@ref(fig:fwdratios). The considerable divergence in values from 2022 is largely caused by the correction of the 2022 abundances due to the large retrospective pattern, as explained above. Figure \@ref(fig:stockwts) compares the estimates and assumed values for both mean weight-at-age in the stock and selectivity-at-age employed in the forecasts for advice in 2022 and 2023.
+
+## Reference points
+
+The reference points for sole in Subarea 4 were updated at the last benchmark (ICES WKBFLATFISH, 2024), following the procedures of ICES WKMSYREF3 (2014). All values are derived from the run of the SS3 model including data up to 2023. The reference points in use for the stock are as follows:
+
+| Reference point  | Value                 | Technical basis   |
+|------------------|-----------------------|-------------------|
+| MSY $B_{trigger}$| `r sprintf("%.0f", c(refpts$Btrigger))` t | $B_{pa}$          |
+| $F_{MSY}$             | `r icesRound(refpts$Fmsy)` | EQsim analysis based on the recruitment period 1958-2015   |
+| $B_{lim}$             | `r sprintf("%.0f", c(refpts$Blim))` t     | Break-point of hockey stick stock-recruit relationship, based on the recruitment period 1958-2018 |
+| $B_{pa}$              | `r sprintf("%.0f", c(refpts$Bpa))` t      | $B_{lim} \cdot \exp(1.645 \cdot 0.2)$ |
+| $F_{lim}$             | `r icesRound(refpts$Flim)`       | EQsim analysis, based on the recruitment period 1958-2018 |
+| $F_{pa}$              | `r icesRound(refpts$Fpa)`        | $F_{lim} / e^{(1.645 \cdot 0.2)}$ |
+| MSY $B_{trigger}$ | `r sprintf("%.0f", c(refpts$Btrigger))` t | MSY               |
+| MSY range $F_{lower}$ | `r paste(icesRound(refpts[c('lFmsy','Fmsy')]), collapse="-")` | Consistent with ranges provided by ICES (2017a), resulting in no more than 5% reduction in long-term yield compared with MSY |
+| MSY range $F_{upper}$ |  `r paste(icesRound(refpts[c('Fmsy','uFmsy')]), collapse="-")` | Consistent with ranges provided by ICES (2017a), resulting in no more than 5% reduction in long-term yield compared with MSY |
+
+## Quality of the assessment
+
+The assessment presents a strong retrospective pattern ($\rho_{SSB} = 0.556$, $\rho_{F} = -0.456$) for which a number of hypothesis have been explored, but no conclusive explanation has yet been found \@ref(fig:retro). The retrospective analyses has been carried out including retrospective fits of the GAM standardization of the BTS index of abundance (Figure \@ref(fig:btsretro)). They were shown to have no effect on the assessment retrospective metric. Also, the model estimates of fleets selectivity at age show changes on the retrospective peels that are necessary to accommodate the discrepancies between catches of older ages and the information on those ages from the abundance indices in recent years.
+
+Information on the strength of incoming year classes provided to the model by both surveys, BTS and SNS, does not match well with the reported catches at age and the assumed natural mortality. The strong retrospective pattern in recruitment estimates, $\rho_{R} = -0.647$, presents a sequential downgrade of the strength of the 2018 year class (Figure \@ref(fig:btsretro)), initially estimated as one of the strongest in the time series. Total mortalities calculated from the changes in relative abundances of the 2018 cohort in the BTS index, are 2-3 times higher than those estimated by the assessment model. Underestimation of total catches of age 1 and 2 fish, combined with natural mortality rates that probably do not account for the effect of recent changes in growth rates, is a possible explanation that requires further investigation. There have been some recent cases of unreported landings of undersized sole.
+
+An exploratory model run applied a larger natural mortality value for age 1 fish, 0.4, as well as setting the start of the data series after the large mortality event of the winter of 1963. Such sudden increase in natural mortality at the start of the time series, and before any index of abundance is available, appears to create difficulties for model estimation. This test run resulted in lower retrospective pattern, of around 0.02 for SSB, but also provided a quite different estimate of stock productivity, past biomass and fishing mortality levels. A new stock assessment model will have to be developed for this stock, possibly focusing on the natural mortality of younger ages, and the recent changes in fleet selectivity, so as to obtain more consistent estimates of stock status. A benchmark in scheduled to take place in 2024.
+
+## Status of the stock
+
+The stock has maintained a moderate average level since the peak catches of the mid-1990s, showing signs of recovery particularly after reaching its lowest estimated biomass in 2007. Biomass has gradually increased, supported by reduced fishing mortality and a corresponding decrease in effort. The 2018 year class, while large, was still not as substantial as some in the past, but has notably contributed to population growth in recent years. The spike in spawning biomass in 2021 is largely attributed to this 2018 year class, accentuated by the knife-edge maturity assumption. As of 2022, the stock is considered healthy, with biomass exceeding the Btrigger reference point. By the start of 2023, biomass is estimated at 55,588 tonnes, slightly above the Btrigger threshold of 52,352 tonnes.
+
+## Management considerations
+
+Sole is mostly taken by beam trawlers in a mixed fishery with plaice in the southern and part of the North Sea. The fishery has changed notably over the last decade with the adoption and subsequent ban of pulse fishing, which was specially successful with sole.
+
+Discards of sole are allowed for multiple gears under the survivability and *de ninimis* exceptions. These include the beam trawlers (TBB-DEF-70-99) targeting the stock, and responsible for most of the catch.
+
+Fishing effort for sole decreased substantially in 2022 and might continue to be reduced in 2023, a decision driven mostly by higher fuel prices.
+
+## Issues for future benchmarks
+
+Revisit maturity assumption and recommend further data collection Q1-2.
+Reconstruct discards, what methods are worth exploring?
+Larger M in 1963.
+Consider area-based assessment to handle survey patterns.
+GAM estimation grid for BTS creates large CVs, too sparse and/or extensive.
+Consider the possibility and effect on adding time-variant M.
+
+## References
+
+Berg, C. W., Nielsen, A., and Kristensen, K. Evaluation of alternative age-based methods for estimating relative abundance from survey data in relation to assessment models. Fisheries Research, 151:91–99. doi:10.1016/j.fishres.2013.10.005
+
+Brooks, E. N. and Legault, C. M. Retrospective forecasting: evaluating performance of stock projections for New England groundfish stocks. Canadian Journal of Fisheries and Aquatic Sciences, 73(6):935–950. doi:10.1139/cjfas-2015-0163.
+
+Carvalho, F., Winker, H. Courtney, D., Kapur, M., Kell, L.T., Cardinale, M., Schirripa, M., Kitakado, T., Yemane, D., Piner, K. R., Maunder, M.N., Taylor, I., Wetzel, C.R., Doering, K., Johnson, K. F., Methot, R.D. 2021. A cookbook for using model diagnostics in integrated stock assessments. Fisheries Research 240.
+
+ICES. 2014. Report of the Joint ICES-MYFISH Workshop to consider the basis for FMSY ranges for all stocks (WKMSYREF3), 17–21 November 2014, Charlottenlund, Denmark. ICES CM 2014/ACOM:64. 147 pp.
+
+ICES. 2015. Report of the Benchmark Workshop on North Sea Stocks (WKNSEA), 2–
+6 February 2015, Copenhagen, Denmark. ICES CM 2015/ACOM:32. 253 pp.
+
+ICES. 2018. Report of the Working Group on Electric Trawling (WGELECTRA). ICES Report WGELECTRA 2018 17 - 19 April 2018. IJmuiden, The Netherlands. 155pp.
+
+ICES. 2020a. Benchmark Workshop for Flatfish stocks in the North Sea and Celtic Sea (WKFlatNSCS). ICES Scientific Reports. 2:23. 966 pp. http://doi.org/10.17895/ices.pub.5976
+
+ICES. 2020b. Workshop on Catch Forecast from Biased Assessments (WKFORBIAS; outputs from 2019 meeting). ICES Scientific Reports. 2:28. 38 pp. http://doi.org/10.17895/ices.pub.5997
+
+ICES. 2024. Benchmark workshop on selected flatfish stocks (WKBFLATFISH). ICES Scientific Reports. 6:30. 729pp. https://doi.org/10.17895/ices.pub.25471987
+
+Kell, L. T., Mosqueira, I., Grosjean, P., Fromentin, J-M., Garcia, D., Hillary, R., Jardim, E., Mardle, S., Pastoors, M. A., Poos, J. J., Scott, F., and Scott, R. D. 2007. FLR: an open-source framework for the evaluation and development of management strategies. – ICES Journal of Marine Science, 64: 640–646. <https://doi.org/10.1093/icesjms/fsm012>
+
+Lorenzen, 2022 Size- and age-dependent natural mortality in fish populations: Biology, models, implica-tions, and a generalized length-inverse mortality paradigm, Fisheries Research, Volume 255, 2022. https://doi.org/10.1016/j.fishres.2022.106454.
+
+Methot, Richard D., and Chantell R. Wetzel. 2013. “Stock Synthesis: A Biological and Statistical Framework for Fish Stock Assessment and Fishery Management.” Fisheries Research 142 (May): 86–99. https://doi.org/10.1016/j.fishres.2012.10.012.
+
+Then, Amy Y, John M Hoenig, Norman G Hall, and David A Hewitt and. 2014. “Evaluating the Predictive Performance of Empirical Estimators of Natural Mortality Rate Using Information on over 200 Fish Species.” ICES Journal of Marine Science 72 (1): 82–92. https://doi.org/10.1093/icesjms/fsu136.
+
+Thorson, James T. 2019. “Predicting Recruitment Density Dependence and Intrinsic Growth Rate for All Fishes Worldwide Using a Data-Integrated Life-History Model.” Fish and Fisheries 21 (2): 237–51. https://doi.org/10.1111/faf.12427.
+
+Scott, F, Mosqueira, I. 2016. Bioeconomic Modelling for Fisheries. EUR-Scientific and Technical Research Reports. Publications Office of the European Union. doi:(10.2788/722156)[http://publications.jrc.ec.europa.eu/repository/handle/JRC104842].
+
+
+<!-- TABLES -->
+
+\newpage
+
+```{r tac, tab.cap="Sole in Subarea 4. Time-series of the official landings by country and overall total, the official BMS landings, the landings reported to ICES and the total TAC (figures rounded to the nearest tonne).", tab.id = "tac"}
+width(fontsize(colformat_num(ftables$catches, big.mark=""), size=8), width=0.6)
+```
+
+\newpage
+
+```{r tlandingsn, tab.cap="Sole in Subarea 4. Time-series of landings at age (in thousands) of sole in Subarea 27.4.", tab.id="tlandingsn"}
+width(fontsize(colformat_num(ftables$landings.n, big.mark=""), size=8), width=0.6)
+```
+
+\newpage
+
+```{r tdiscardsn, tab.cap="Sole in Subarea 4. Time-series of discards at age (in thousands) of sole in Subarea 27.4.", tab.id="tdiscardsn"}
+width(fontsize(colformat_num(ftables$discards.n, big.mark=""), size=8), width=0.6)
+```
+
+\newpage
+
+```{r tlandingswt, tab.cap="Sole in Subarea 4. Time-series of the mean weights-at-age in the landings of sole in Subarea 27.4.", tab.id="tlandingswt"}
+width(fontsize(colformat_double(ftables$landings.wt, digits=2), size=8), width=0.6)
+```
+
+\newpage
+
+```{r tdiscardswt, tab.cap="Sole in Subarea 4. Time-series of the mean weights-at-age in the discards of sole in Subarea 27.4.", tab.id="tdiscardswt"}
+width(fontsize(colformat_double(ftables$discards.wt, digits=2), size=8), width=0.6)
+```
+
+\newpage
+
+```{r tstockwt, tab.cap="Sole in Subarea 4. Time-series of the mean weights-at-age in the stock of sole in Subarea 27.4.", tab.id="tstockwt"}
+width(fontsize(colformat_double(ftables$stock.wt, digits=2), size=8), width=0.6)
+```
+
+\newpage
+
+```{r tmatm, tab.cap="Sole in Subarea 4. Assumed values of maturity and natural mortality-at-age in the stock of sole in Subarea 27.4. For the year 1963 where a value of 0.9 was used to take into account the effect of the severe winter of 1962-1963.", tab.id="tmatm"}
+width(fontsize(colformat_double(ftables$matm, digits=1, j=2:3), size=8), width=0.8)
+```
+
+\newpage
+
+```{r tbts, tab.cap="Sole in Subarea 4. Index of abundance, based on the BTS Q3 survey samples from The Netherlands, Germany and Belgium, used in the assessment of sole in Subarea 27.4.", tab.id="tbts"}
+width(fontsize(colformat_double(ftables$bts, big.mark="", digits=2), size=8),
+  width=0.6)
+```
+
+\newpage
+
+```{r tsns, tab.cap="Sole in Subarea 4. Index of abundance, based on the SNS survey, used in the assessment of sole in Subarea 27.4.", tab.id="tsns"}
+width(fontsize(colformat_double(ftables$sns, big.mark="", digits=2), size=8),
+  width=0.6)
+```
+
+\newpage
+
+```{r tstockn, tab.cap="Sole in Subarea 4. Time series of abundances at age (in thousands) estimated by the AAP stock assessment for sole in Subarea 27.4.", tab.id="tstockn"}
+width(fontsize(colformat_num(ftables$stock.n, big.mark=""), size=8), width=0.6)
+```
+
+\newpage
+
+```{r tharvest, tab.cap="Sole in Subarea 4. Time series of fishing mortality at age estimated by the AAP stock assessment for sole in Subarea 27.4.", tab.id="tharvest"}
+width(fontsize(colformat_double(ftables$harvest, digits=3), size=8), width=0.6)
+```
+
+\newpage
+
+```{r catchops, tab.cap="Sole in Subarea 4.", tab.id="catchops"}
+width(fontsize(colformat_double(catchops, digits=3), size=8), width=0.6)
+```
+
+\newpage
+
+```{r tssbf, tab.cap="Sole in Subarea 4. Time series of spawning stock biomass, mean fishing mortality and recruitment, plus lower and upper confidence intervals, estimated by the AAP stock assessment for sole in Subarea 27.4.", tab.id="tssbf"}
+width(fontsize(colformat_double(colformat_num(ftables$ssbf, big.mark="", j=1:4), digits=3, j=5:7), size=8), width=0.6)
+```
+
+\newpage
+
+<!-- FIGURES -->
+
+```{r official, fig.cap="Sole in Subarea 4. Official landings reported to ICES by country in 2019."}
+include_graphics('report/official_landings.png')
+```
+
+\newpage
+
+```{r catches, fig.cap="Sole in Subarea 4. Time series of catches, landings and discards (in tonnes) reported to ICES InterCatch."}
+include_graphics('report/data_catches.png')
+```
+
+\newpage
+
+```{r landingsn, fig.cap="Sole in Subarea 4. Time series of landings at age (in thousands)."}
+include_graphics('report/data_landingsn.png')
+```
+
+\newpage
+
+```{r discardsn, fig.cap="Sole in Subarea 4. Time series of discards at age (in thousands)."}
+include_graphics('report/data_discardsn.png')
+```
+
+\newpage
+
+```{r discardsp, fig.cap="Sole in Subarea 4. Proportions of fish discarded by age over the 2002-2019 period."}
+include_graphics('report/data_discardsp.png')
+```
+
+\newpage
+
+```{r iclawt, fig.cap="Sole in Subarea 4. InterCatch summary plots. Sampled and unsampled fleets for landings yield estimation (tonnes)."}
+include_graphics('report/intercatch/landingsWtCoutryFleets.png')
+```
+
+\newpage
+
+```{r iclape, fig.cap="Sole in Subarea 4. InterCatch summary plots. Sampled and unsampled fleets for landings yield estimation (cumulative percentage)."}
+include_graphics('report/intercatch/landingsPercCoutryFleets.png')
+```
+
+\newpage
+
+```{r icdiwt, fig.cap="Sole in Subarea 4. InterCatch summary plots. Sampled and unsampled fleets for discards yield estimation (tonnes)."}
+include_graphics('report/intercatch/DiscardProvisionCoutryFleets.png')
+```
+
+\newpage
+
+```{r landingswt, fig.cap="Sole in Subarea 4. Time series of mean weight-at-age in the landings (in grammes)."}
+include_graphics('report/data_landingswt.png')
+```
+
+\newpage
+
+```{r stockwt, fig.cap="Sole in Subarea 4. Time series of mean weight-at-age in the stock (in grammes)."}
+include_graphics('report/data_stockwt.png')
+```
+
+\newpage
+
+```{r stockwtrecent, fig.cap="Sole in Subarea 4. Recent values of the time series of mean weight-at-age in the stock (in grammes)."}
+include_graphics('report/data_stockwt_recent.png')
+```
+
+\newpage
+
+<!-- INDICES -->
+
+```{r maphauls, fig.cap="Sole in Subarea 4. Location of stations sampled during the BTS Q3 survey and included in the BTS index of abundance."}
+include_graphics('report/gam/gam_samples.png')
+```
+
+\newpage
+
+```{r btssns, fig.cap="Sole in Subarea 4. Comparison of the time series of relative abundance at age from the BTS Q3 delta-lognormal GAM standardized (1985-2021) and SNS (1970-2021) indices of abundance."}
+include_graphics('report/data_bts-sns.png')
+```
+
+\newpage
+
+```{r bts, fig.cap="Sole in Subarea 4. Time series of relative abundance at age from the BTS Q3 delta-lognormal GAM standardized index of abundance (1985-2021)."}
+ include_graphics('report/data_bts.png')
+```
+
+\newpage
+
+```{r corrbts, fig.cap="Sole in Subarea 4. Bivariate cross-correlation plots showing the internal consistency in signals by cohort for the BTS Q3 delta-lognormal GAM standardized index of abundance (1985-2022).", fig.width=5, fig.height=5}
+include_graphics('report/data_corrbts.png')
+```
+
+\newpage
+
+```{r btscohort, fig.cap="Sole in Subarea 4. Abundance in log scale by cohort (in the x axis) and age (coloured lines) for the BTS Q3 delta-lognormal GAM standardized index of abundance (2001-2021)."}
+include_graphics('report/data_bts_cohort.png')
+```
+
+\newpage
+
+```{r sns, fig.cap="Sole in Subarea 4. Time series of relative abundance at age from the SNS index of abundance (1970-2022)."}
+include_graphics('report/data_sns.png')
+```
+
+\newpage
+
+```{r corrsns, fig.cap="Sole in Subarea 4. Bivariate cross-correlation plots showing the internal consistency in signals by cohort for the SNS index of abundance (1970-2022).", fig.width=5, fig.height=5}
+include_graphics('report/data_corrsns.png')
+```
+
+\newpage
+
+```{r corrsnstime, fig.cap="Sole in Subarea 4. Bivariate cross-correlation plots showing the internal consistency in signals by cohort for the SNS index of abundance, over the last three decades (left to right 1993-2002, 2003-2012 and 2013-2022).", fig.width=6, fig.height=2}
+include_graphics('report/data_corrsns_decade.png')
+```
+
+\newpage
+
+```{r snscohort, fig.cap="Sole in Subarea 4. Abundance in log scale by cohort (in the x axis) and age (coloured lines) for the SNS index of abundance (2004-2021)."}
+include_graphics('report/data_sns_cohort.png')
+```
+
+\newpage
+
+```{r btsretro, fig.cap="Sole in Subarea 4. Retrospective pattern in lognormal GAM-standardized BTS Q3 index of abundance.", fig.heigth=3}
+include_graphics('report/data_btsretro.png')
+```
+
+<!-- TODO survey maps -->
+
+
+<!-- RESULTS -->
+
+\newpage
+
+```{r fit, fig.cap="Sole in Subarea 4. Estimates time series of recruitment at age 0 (in thousands), spawning biomass (in tonnes) and fishing mortality (as average of ages 2 to 6), together with total catch (in tonnes). Grey bands show the 95% uncertainty estimate, computed as two times the standard deviation."}
+include_graphics('report/model_fit.png')
+```
+
+\newpage
+
+```{r recssb, fig.cap="Sole in Subarea 4. Estimates of recruitment at age 1 (in thousands) and spawning biomass (in tonnes), connected in time. Labels refer to the year in which recruitment was observed."}
+include_graphics('report/model_recssb.png')
+```
+
+\newpage
+
+```{r propssb, fig.cap="Sole in Subarea 4. Estimated proportions of spawning biomass by age and year."}
+include_graphics('report/model_propssb.png')
+```
+
+\newpage
+
+```{r residsource, fig.cap="Sole in Subarea 4. Residuals of model fit to the four sources of data: BTS and SNS indices of abundance, landings-at-age (landings.n) and discards-ta-age (discards.n). Residuals in log scale are standardized by the estimated standard deviation."}
+include_graphics('report/model_resid_source.png')
+```
+
+\newpage
+
+```{r residts, fig.cap="Sole in Subarea 4. Residuals of model fit to the four sources of data: BTS and SNS indices of abundance, landings-at-age (landings.n) and discards-ta-age (discards.n). Residuals in log scale are standardized by the estimated standard deviation."}
+include_graphics('report/model_resid_ts.png')
+```
+
+\newpage
+
+```{r catchfit, fig.cap="Sole in Subarea 4. Observed (dots) and predicted (lines) total landings and discards."}
+include_graphics('report/model_catchesfit.png')
+```
+
+\newpage
+
+```{r runstest, fig.cap="Sole in Subarea 4. Runs test of model fit to index vulnerable biomass for the two indices of abundance: BTS and SNS. Green shading indicates no evidence and red shading evidence to reject the hypothesis of a randomly distributed time-series of residuals, respectively. The shaded area spans three residual standard deviations to either site from zero, and the red points outside of the shading violate the ‘three-sigma limits’ for that series."}
+include_graphics('report/indices_runstest.png')
+```
+
+\newpage
+
+```{r runstestages, fig.cap="Sole in Subarea 4. Runs test of model fit to the sampled abundances at age for the two indices of abundance: BTS and SNS. Green shading indicates no evidence and red shading evidence to reject the hypothesis of a randomly distributed time-series of residuals, respectively. The shaded area spans three residual standard deviations to either site from zero, and the red points outside of the shading violate the ‘three-sigma limits’ for that series."}
+include_graphics('report/indices_runstest_ages.png')
+```
+
+\newpage
+
+```{r retro, fig.cap="Sole in Subarea 4. Retrospective patterns in estimated age 1 recruitment, spawning biomass and mean fishing mortality, computed over five one-year steps."}
+include_graphics('report/model_retro.png')
+```
+
+\newpage
+
+```{r xval, fig.cap="Sole in Subarea 4. Hindcasting cross-validation of indices of abundance to estimate assessment model prediction skill."}
+include_graphics('report/survey_xval.png')
+```
+
+\newpage
+
+```{r loo, fig.cap="Leave-one-out analysis of the AAP model run."}
+include_graphics('report/model_loo.png')
+```
+
+\newpage
+
+```{r sigmas, fig.cap="Sole in Subarea 4. Estimated standard deviations of the partial model likelihood by age and per each component."}
+include_graphics('report/model_sigmas.png')
+```
+
+\newpage
+
+```{r fwdmc, fig.cap="Sole in Subarea 4. Stochastic forecast of spawning stock biomass (SSB) against the corresponding reference points, and recruitment variability applied in it. The black line shows the median value, which is not exactly equal to the predicted values used in the advice. Darker and lighter red ribbons present the 95% and 50% quantiles, respectively."}
+include_graphics('report/forecast/model_fwdmc.png')
+```
+
+```{r fwdratios, fig.cap="Sole in Subarea 4. Comparison of the 2022 and 2023 stock assessment and forecast estimates in abundances at age. The squares show the ratios of the 2003 over the 2002 values. Red squares show a decrease in the estimate in 2023 compares with 2022, and green depicts an increase. The 2023 final year (2022) estimates have been corrected for retrospective bias."}
+include_graphics('report/forecast/model_abundance_ratios.png')
+```
+
+```{r stockwts, fig.cap="Sole in Subarea 4. Comparison of the 2022 and 2023 stock assessment and forecast estimates and assumed values for mean weight-at-age in the stock and selectivity at age."}
+include_graphics('report/forecast/model_swtcasel_newold.png')
+```
